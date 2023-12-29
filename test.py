@@ -71,7 +71,8 @@ def main():
                                                 pred_len=96,
                                                 hyperparameters=hyperparameters,
                                                 args=args,
-                                                seed=1234)
+                                                seed=1234,
+                                                device=device)
 
     trainforecastdenoise.train()
     trainforecastdenoise.evaluate()

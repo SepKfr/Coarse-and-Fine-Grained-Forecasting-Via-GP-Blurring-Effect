@@ -24,7 +24,8 @@ class TrainForecastDenoise:
                  pred_len,
                  hyperparameters,
                  args,
-                 seed
+                 seed,
+                 device
                  ):
 
         gp = True if noise_type == "gp" else False
@@ -39,7 +40,7 @@ class TrainForecastDenoise:
                                                           add_noise_only_at_training=add_noise_only_at_training,
                                                           src_input_size=src_input_size,
                                                           tgt_input_size=tgt_input_size,
-                                                          pred_len=pred_len)
+                                                          pred_len=pred_len).to(device)
 
         self.hyperparameters = hyperparameters
         self.args = args
