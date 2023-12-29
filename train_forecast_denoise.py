@@ -151,7 +151,7 @@ class TrainForecastDenoise:
         j = 0
 
         for test_enc, test_dec, test_y in self.test_data:
-            output, _, _ = self.best_forecast_denoise_model(test_enc, test_dec)
+            output, _ = self.best_forecast_denoise_model(test_enc, test_dec)
             predictions[j] = output.squeeze(-1).cpu().detach()
             test_y_tot[j] = test_y[:, -self.pred_len:, :].squeeze(-1).cpu().detach()
             j += 1
