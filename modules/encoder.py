@@ -50,7 +50,7 @@ class Encoder(nn.Module):
         self.device = device
         self.attn_type = attn_type
         self.pos_emb = PositionalEncoding(
-            d_hid=d_model)
+            d_hid=d_model, device=device)
         self.n_layers = n_layers
         self.layers = []
         for _ in range(n_layers):

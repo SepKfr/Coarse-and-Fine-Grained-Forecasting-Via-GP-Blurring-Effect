@@ -54,7 +54,7 @@ class Decoder(nn.Module):
         self.device = device
         self.attn_type = attn_type
         self.pos_emb = PositionalEncoding(
-            d_hid=d_model)
+            d_hid=d_model, device=device)
         self.layer_norm = nn.LayerNorm(d_model)
         self.layers = []
         for _ in range(n_layers):
