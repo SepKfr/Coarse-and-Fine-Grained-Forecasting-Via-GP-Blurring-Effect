@@ -68,7 +68,6 @@ def main():
                                                 data_loader.test_loader,
                                                 noise_type="gp",
                                                 num_inducing=32,
-                                                learning_residual=args.learning_residual,
                                                 add_noise_only_at_training=args.add_noise_only_at_training,
                                                 src_input_size=src_input_size,
                                                 tgt_input_size=tgt_input_size,
