@@ -1,6 +1,7 @@
 import os
-import gpytorch
+import random
 import pandas as pd
+import numpy as np
 import torch
 import torch.nn as nn
 import optuna
@@ -48,6 +49,11 @@ class TrainForecastDenoise:
         - device: Device on which to run the training.
         - num_inducing (int): Number of inducing points for GP regression.
         """
+
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.random.manual_seed(seed)
+
         gp = True if noise_type == "gp" else False
         iso = True if noise_type == "iso" else False
         no_noise = True if noise_type == "no_noise" else False
