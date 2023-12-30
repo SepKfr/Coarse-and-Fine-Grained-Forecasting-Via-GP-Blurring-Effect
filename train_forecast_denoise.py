@@ -69,7 +69,8 @@ with gpytorch.settings.num_likelihood_samples(1):
         def run_optuna(self):
 
             study = optuna.create_study(study_name="train forecast denoise model",
-                                        direction="minimize")
+                                        direction="minimize",
+                                        sampler=optuna.samplers.TPESampler())
             study.optimize(self.objective, n_trials=self.args.n_trials,
                            n_jobs=self.args.n_jobs)
 
@@ -121,6 +122,10 @@ with gpytorch.settings.num_likelihood_samples(1):
                     optimizer.zero_grad()
                     loss.backward()
                     optimizer.step()
+
+                trial.report(loss, epoch)
+                if trial.should_prune():
+                    raise optuna.TrialPruned()
 
                 self.forecast_denoising_model.eval()
                 valid_loss = 0
