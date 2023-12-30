@@ -14,7 +14,7 @@ def main():
     parser.add_argument("--cuda", type=str, default="cuda:0")
     parser.add_argument("--noise_type", type=str, default="gp")
     parser.add_argument("--seed", type=int, default=1234)
-    parser.add_argument("--n_trials", type=int, default=10)
+    parser.add_argument("--n_trials", type=int, default=50)
     parser.add_argument("--n_jobs", type=int, default=1)
     parser.add_argument("--gpytorch_samples", type=int, default=1)
     parser.add_argument("--learning_residual", type=lambda x: str(x).lower() == "true", default="False")
