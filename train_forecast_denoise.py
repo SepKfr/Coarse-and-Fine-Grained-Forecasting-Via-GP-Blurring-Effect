@@ -41,7 +41,6 @@ with gpytorch.settings.num_likelihood_samples(1):
 
             self.forecast_denoising_model = ForecastDenoising(forecasting_model=forecasting_model,
                                                               gp=gp, iso=iso, no_noise=no_noise,
-                                                              residual=learning_residual,
                                                               add_noise_only_at_training=add_noise_only_at_training,
                                                               src_input_size=src_input_size,
                                                               tgt_input_size=tgt_input_size,
@@ -57,12 +56,11 @@ with gpytorch.settings.num_likelihood_samples(1):
             if not os.path.exists(self.model_path):
                 os.makedirs(self.model_path)
 
-            self.model_name = "{}_{}_{}_{}{}{}{}{}{}{}".format(args.model_name, args.exp_name, pred_len, seed,
+            self.model_name = "{}_{}_{}_{}{}{}{}{}{}".format(args.model_name, args.exp_name, pred_len, seed,
                                                                "_denoise",
                                                                "_gp" if gp else "",
                                                                "_predictions" if no_noise else "",
                                                                "_iso" if iso else "",
-                                                               "_learning_residual" if learning_residual else "",
                                                                "_add_noise_only_at_training" if add_noise_only_at_training else "")
             self.pred_len = pred_len
 
