@@ -16,6 +16,7 @@ def main():
     parser.add_argument("--seed", type=int, default=1234)
     parser.add_argument("--n_trials", type=int, default=10)
     parser.add_argument("--n_jobs", type=int, default=1)
+    parser.add_argument("--gpytorch_samples", type=int, default=1)
     parser.add_argument("--learning_residual", type=lambda x: str(x).lower() == "true", default="False")
     parser.add_argument("--no-noise", type=lambda x: str(x).lower() == "true", default="False")
     parser.add_argument("--add_noise_only_at_training", type=lambda x: str(x).lower() == "true", default="False")
@@ -46,6 +47,7 @@ def main():
 
     src_input_size = train_enc.shape[2]
     tgt_input_size = train_dec.shape[2]
+    tgt_output_size = train_y.shape[2]
 
     d_model = 32
 
@@ -57,17 +59,20 @@ def main():
                                     seed=1234).to(device)
 
     hyperparameters = {"d_model": [16, 32], "n_heads": [1, 8],
-                       "n_layers": [1, 2], "lr": [0.01, 0.001]}
+                       "n_layers": [1, 2], "lr": [0.01, 0.001],
+                       "num_inducing": [32, 64]}
 
     trainforecastdenoise = TrainForecastDenoise(forecasting_model,
                                                 data_loader.train_loader,
                                                 data_loader.valid_loader,
                                                 data_loader.test_loader,
                                                 noise_type="gp",
+                                                num_inducing=32,
                                                 learning_residual=args.learning_residual,
                                                 add_noise_only_at_training=args.add_noise_only_at_training,
                                                 src_input_size=src_input_size,
                                                 tgt_input_size=tgt_input_size,
+                                                tgt_output_size=tgt_output_size,
                                                 pred_len=96,
                                                 hyperparameters=hyperparameters,
                                                 args=args,

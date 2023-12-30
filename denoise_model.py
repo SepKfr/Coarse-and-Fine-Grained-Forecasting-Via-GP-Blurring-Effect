@@ -4,13 +4,12 @@ from DeepGP import DeepGPp
 
 
 class DenoiseModel(nn.Module):
-    def __init__(self, model, gp, d, n_noise=False, residual=False, iso=False):
+    def __init__(self, model, gp, d, num_inducing, n_noise=False, residual=False, iso=False):
         super(DenoiseModel, self).__init__()
 
         self.denoising_model = model
 
-        self.deep_gp = DeepGPp(d)
-        self.proj_1 = nn.Linear(1, d)
+        self.deep_gp = DeepGPp(d, num_inducing)
         self.gp = gp
         self.sigma = nn.Parameter(torch.randn(1))
 
@@ -26,9 +25,8 @@ class DenoiseModel(nn.Module):
 
         b, s, _ = x.shape
 
-        dist = self.deep_gp(x)
-        eps_gp = dist.sample().permute(1, 2, 0)
-        x_noisy = x + self.proj_1(eps_gp)
+        eps_gp, dist = self.deep_gp.predict(x)
+        x_noisy = x + eps_gp
 
         return x_noisy, dist
 

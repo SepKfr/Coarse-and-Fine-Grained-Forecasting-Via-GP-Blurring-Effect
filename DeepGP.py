@@ -1,14 +1,14 @@
 import torch
 from gpytorch.distributions import MultivariateNormal
 from gpytorch.kernels import ScaleKernel, RBFKernel
-from gpytorch.likelihoods import GaussianLikelihood
+from gpytorch.likelihoods import MultitaskGaussianLikelihood
 from gpytorch.means import ConstantMean, LinearMean
 from gpytorch.models.deep_gps import DeepGPLayer, DeepGP
 from gpytorch.variational import VariationalStrategy, MeanFieldVariationalDistribution
 
 
 class ToyDeepGPHiddenLayer(DeepGPLayer):
-    def __init__(self, input_dims, output_dims, num_inducing=256, mean_type='constant'):
+    def __init__(self, input_dims, output_dims, num_inducing=32, mean_type='constant'):
 
         if output_dims is None:
             inducing_points = torch.randn(num_inducing, input_dims)
@@ -47,24 +47,28 @@ class ToyDeepGPHiddenLayer(DeepGPLayer):
 
 
 class DeepGPp(DeepGP):
-    def __init__(self, num_hidden_dims):
+    def __init__(self, num_hidden_dims, num_inducing):
         hidden_layer = ToyDeepGPHiddenLayer(
             input_dims=num_hidden_dims,
-            output_dims=None,
+            output_dims=num_hidden_dims,
             mean_type='linear',
+            num_inducing=num_inducing
         )
 
         super().__init__()
 
         self.hidden_layer = hidden_layer
-        self.likelihood = GaussianLikelihood()
+        self.likelihood = MultitaskGaussianLikelihood(num_tasks=num_hidden_dims)
 
     def forward(self, inputs):
+
         dist = self.hidden_layer(inputs)
         return dist
 
     def predict(self, x):
 
-        preds = self.likelihood(self(x))
+        dist = self(x)
+        preds = self.likelihood(dist)
+        preds_mean = preds.mean.mean(0)
 
-        return torch.cat(preds, dim=-1)
+        return preds_mean, dist

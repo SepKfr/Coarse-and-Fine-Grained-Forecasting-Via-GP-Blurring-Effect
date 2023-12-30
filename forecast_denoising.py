@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
 from gpytorch.mlls import DeepApproximateMLL, VariationalELBO
-
-from DeepGP import DeepGPp
 from denoise_model import DenoiseModel
 
 
@@ -14,8 +12,9 @@ class ForecastDenoising(nn.Module):
                  pred_len: int,
                  src_input_size: int,
                  tgt_input_size: int,
-                 d_model: int = 32,
-                 ):
+                 tgt_output_size: int,
+                 num_inducing: int,
+                 d_model: int = 32):
 
         super(ForecastDenoising, self).__init__()
 
@@ -31,18 +30,18 @@ class ForecastDenoising(nn.Module):
                                      d_model,
                                      n_noise=no_noise,
                                      residual=residual,
-                                     iso=iso)
+                                     iso=iso,
+                                     num_inducing=num_inducing)
         self.residual = residual
-        self.final_projection = nn.Linear(d_model, 1)
+        self.final_projection = nn.Linear(d_model, tgt_output_size)
         self.enc_embedding = nn.Linear(src_input_size, d_model)
         self.dec_embedding = nn.Linear(tgt_input_size, d_model)
-        self.deep_gp = DeepGPp(d_model)
+        self.d_model = d_model
 
     def forward(self, enc_inputs, dec_inputs, y_true=None):
 
         mll_error = 0
         loss = 0
-        mse_loss = 0
 
         enc_inputs = self.enc_embedding(enc_inputs)
         dec_inputs = self.dec_embedding(dec_inputs)
@@ -50,26 +49,22 @@ class ForecastDenoising(nn.Module):
         enc_outputs, dec_outputs = self.forecasting_model(enc_inputs, dec_inputs)
         forecasting_model_outputs = self.final_projection(dec_outputs[:, -self.pred_len:, :])
 
-        if self.input_corrupt and self.training:
+        de_model_outputs, dist = self.de_model(enc_outputs.clone(), dec_outputs.clone())
+        final_outputs = self.final_projection(de_model_outputs[:, -self.pred_len:, :])
 
-            de_model_outputs, dist = self.de_model(enc_outputs.clone(), dec_outputs.clone())
-            final_outputs = self.final_projection(de_model_outputs[:, -self.pred_len:, :])
+        if self.gp and self.training:
+            mll = DeepApproximateMLL(
+                VariationalELBO(self.de_model.deep_gp.likelihood, self.de_model.deep_gp, self.d_model))
+            mll_error = -mll(dist, y_true).mean()
 
-            if self.gp and self.training:
-                mll = DeepApproximateMLL(
-                    VariationalELBO(self.de_model.deep_gp.likelihood, self.de_model.deep_gp, self.d))
-                mll_error = -mll(dist, y_true.permute(2, 0, 1)).mean()
+        if self.residual:
 
-            if self.residual:
-
-                enc_outputs_res, dec_outputs_res = self.forecasting_model(enc_outputs, dec_outputs)
-                res_outputs = self.final_projection(dec_outputs_res[:, -self.pred_len:, :])
-                final_outputs = forecasting_model_outputs + res_outputs
-                if y_true is not None:
-                    residual = y_true - forecasting_model_outputs
-                    loss = nn.MSELoss()(y_true, residual)
-        else:
-            final_outputs = forecasting_model_outputs
+            enc_outputs_res, dec_outputs_res = self.forecasting_model(enc_outputs, dec_outputs)
+            res_outputs = self.final_projection(dec_outputs_res[:, -self.pred_len:, :])
+            final_outputs = forecasting_model_outputs + res_outputs
+            if y_true is not None:
+                residual = y_true - forecasting_model_outputs
+                loss = nn.MSELoss()(y_true, residual)
 
         if y_true is not None:
             mse_loss = nn.MSELoss()(y_true, final_outputs)
