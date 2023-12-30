@@ -44,9 +44,9 @@ class ForecastDenoising(nn.Module):
 
         # Initialize the blur and denoise model
         self.de_model = BlurDenoiseModel(self.forecasting_model,
-                                         gp,
                                          d_model,
-                                         n_noise=no_noise,
+                                         gp=gp,
+                                         no_noise=no_noise,
                                          iso=iso,
                                          num_inducing=num_inducing)
 
