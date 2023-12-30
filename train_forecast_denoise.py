@@ -96,7 +96,7 @@ with gpytorch.settings.num_likelihood_samples(1):
             for param, values in self.hyperparameters.items():
                 param_dict[param] = trial.suggest_categorical(param, values)
 
-            forecast_denoise_model_attributes = [attr for attr in dir(self.forecasting_model) if
+            forecast_denoise_model_attributes = [attr for attr in dir(self.forecast_denoising_model) if
                                                  not callable(getattr(self.forecast_denoising_model, attr))]
 
             for attr in forecast_denoise_model_attributes:
