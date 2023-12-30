@@ -6,8 +6,13 @@ from train_forecast_denoise import TrainForecastDenoise
 
 
 def main():
-    parser = argparse.ArgumentParser(description="preprocess argument parser")
-    # forecasting model
+    """
+    An example to execute the training and evaluation workflow for the forecasting and denoising model.
+    """
+    # Argument parser for configuring the training process
+    parser = argparse.ArgumentParser(description="forecast-denoise argument parser")
+
+    # Forecasting model parameters
     parser.add_argument("--attn_type", type=str, default='autoformer')
     parser.add_argument("--model_name", type=str, default="autoformer")
     parser.add_argument("--exp_name", type=str, default='traffic')
@@ -24,16 +29,18 @@ def main():
 
     args = parser.parse_args()
 
+    # Target column names for different datasets
     target_col = {"traffic": "values",
                   "electricity": "power_usage",
                   "exchange": "value",
                   "solar": "Power(MW)",
                   "air_quality": "NO2",
-                  "watershed": "Conductivity"
-                  }
+                  "watershed": "Conductivity"}
 
+    # Device configuration
     device = torch.device(args.cuda if torch.cuda.is_available() else "cpu")
 
+    # Data loader configuration (replace with your own dataloader)
     data_loader = DataLoader(exp_name=args.exp_name,
                              max_encoder_length=192,
                              pred_len=96,
@@ -43,14 +50,16 @@ def main():
                              batch_size=4,
                              device=device)
 
+    # Extracting shapes from training data for model configuration
     train_enc, train_dec, train_y = next(iter(data_loader.train_loader))
-
     src_input_size = train_enc.shape[2]
     tgt_input_size = train_dec.shape[2]
     tgt_output_size = train_y.shape[2]
 
+    # Dimensionality of the model
     d_model = 32
 
+    # Initializing the forecasting model (replace with your forecasting model)
     forecasting_model = Transformer(d_model=d_model,
                                     d_ff=d_model * 4,
                                     d_k=d_model, n_heads=8,
@@ -58,10 +67,12 @@ def main():
                                     attn_type=args.attn_type,
                                     seed=1234).to(device)
 
+    # Hyperparameter search space (change accordingly)
     hyperparameters = {"d_model": [16, 32], "n_heads": [1, 8],
                        "n_layers": [1, 2], "lr": [0.01, 0.001],
                        "num_inducing": [32, 64]}
 
+    # Initializing and training the ForecastDenoise model using Optuna
     trainforecastdenoise = TrainForecastDenoise(forecasting_model,
                                                 data_loader.train_loader,
                                                 data_loader.valid_loader,
