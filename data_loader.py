@@ -5,7 +5,7 @@ import pandas as pd
 import torch
 from torch.utils.data import BatchSampler, TensorDataset
 from pytorch_forecasting.data import TimeSeriesDataSet
-from data import traffic
+from data import traffic, electricity, solar, air_quality, watershed, exchange
 
 
 class DataLoader:
@@ -17,8 +17,12 @@ class DataLoader:
                  max_test_sample,
                  batch_size,
                  device):
-
-        data_formatter = {"traffic": traffic.TrafficFormatter}
+        data_formatter = {"traffic": traffic.TrafficFormatter,
+                          "electricity": electricity.ElectricityFormatter,
+                          "solar": solar.SolarFormatter,
+                          "air_quality": air_quality.AirQualityFormatter,
+                          "watershed": watershed.WatershedFormatter,
+                          "exchange": exchange.ExchangeFormatter}
 
         self.max_encoder_length = max_encoder_length
         self.pred_len = pred_len
