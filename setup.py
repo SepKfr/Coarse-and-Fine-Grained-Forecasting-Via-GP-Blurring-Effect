@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='forecastblurdenoise',
-    version='0.1.0',
+    version='0.1.1',
     packages=['forecastblurdenoise'],
     install_requires=[
         # List your dependencies here

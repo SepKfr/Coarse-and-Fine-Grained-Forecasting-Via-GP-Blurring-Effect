@@ -1,6 +1,6 @@
 package:
   name: forecastblurdenoise
-  version: 0.1.0
+  version: 0.1.1
 
 source:
   git_url: https://github.com/SepKfr/Fine_grained_forecasting.git
