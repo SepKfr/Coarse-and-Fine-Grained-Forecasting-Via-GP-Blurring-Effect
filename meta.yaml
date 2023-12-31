@@ -18,8 +18,11 @@ requirements:
     - wheel
   run:
     - python >=3.10
-    - conda-forge::torch
-    - conda-forge::gpytorch
+    - torch >=2.0.1
+    - gpytorch >=1.9.0
+    - pandas >=1.5.2
+    - numpy >=1.23.5
+    - optuna >=3.3.0
 
 about:
   home: https://github.com/SepKfr/forecast_blur_denoise
