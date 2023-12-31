@@ -34,7 +34,7 @@ class DataLoader:
         random.seed(seed)
         np.random.seed(seed)
 
-        data_csv_path = "{}.csv".format(exp_name)
+        data_csv_path = "~/research/Corruption-resilient-Forecasting-Models/{}.csv".format(exp_name)
         data = pd.read_csv(data_csv_path, dtype={'date': str})
         data.sort_values(by=["id", "hours_from_start"], inplace=True)
         data = data_formatter[exp_name](pred_len).transform_data(data)

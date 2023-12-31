@@ -1,7 +1,6 @@
 import torch.nn as nn
 import torch
-from DeepGP import DeepGPp
-from modules.feedforward import PoswiseFeedForwardNet
+from forecastblurdenoise.DeepGP import DeepGPp
 
 
 class BlurDenoiseModel(nn.Module):
@@ -30,8 +29,12 @@ class BlurDenoiseModel(nn.Module):
         # Layer normalization and feedforward networks
         self.norm_1 = nn.LayerNorm(d_model)
         self.norm_2 = nn.LayerNorm(d_model)
-        self.ffn_1 = PoswiseFeedForwardNet(d_model=d_model, d_ff=d_model*4)
-        self.ffn_2 = PoswiseFeedForwardNet(d_model=d_model, d_ff=d_model*4)
+        self.ffn_1 = nn.Sequential(nn.Linear(d_model, d_model*4),
+                                   nn.ReLU(),
+                                   nn.Linear(d_model*4, d_model))
+        self.ffn_2 = nn.Sequential(nn.Linear(d_model, d_model*4),
+                                   nn.ReLU(),
+                                   nn.Linear(d_model*4, d_model))
 
         self.d = d_model
         self.no_noise = no_noise

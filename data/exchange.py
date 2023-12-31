@@ -16,9 +16,9 @@
 # Lint as: python3
 
 from Utils.base import DataTypes, InputTypes
-from data.electricity import ElectricityFormatter
+from data.traffic import TrafficFormatter
 
-DataFormatter = ElectricityFormatter
+DataFormatter = TrafficFormatter
 
 
 class ExchangeFormatter(DataFormatter):

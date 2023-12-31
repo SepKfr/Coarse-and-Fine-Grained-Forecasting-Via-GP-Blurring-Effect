@@ -52,7 +52,6 @@ class ElectricityFormatter(GenericDataFormatter):
         self._target_scaler = None
         self._num_classes_per_cat_input = None
         self.pred_len = pred_len
-        self._time_steps = self.get_fixed_params()['total_time_steps']
 
     def transform_data(self, df):
         """Splits data_set frame into training-validation-test data_set frames.

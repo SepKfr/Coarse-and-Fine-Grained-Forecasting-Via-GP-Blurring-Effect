@@ -15,7 +15,7 @@ def main():
     # Forecasting model parameters
     parser.add_argument("--attn_type", type=str, default='autoformer')
     parser.add_argument("--model_name", type=str, default="autoformer")
-    parser.add_argument("--exp_name", type=str, default='traffic')
+    parser.add_argument("--exp_name", type=str, default='exchange')
     parser.add_argument("--cuda", type=str, default="cuda:0")
     parser.add_argument("--noise_type", type=str, default="gp")
     parser.add_argument("--seed", type=int, default=1234)
@@ -32,7 +32,7 @@ def main():
     # Target column names for different datasets
     target_col = {"traffic": "values",
                   "electricity": "power_usage",
-                  "exchange": "value",
+                  "exchange": "OT",
                   "solar": "Power(MW)",
                   "air_quality": "NO2",
                   "watershed": "Conductivity"}
