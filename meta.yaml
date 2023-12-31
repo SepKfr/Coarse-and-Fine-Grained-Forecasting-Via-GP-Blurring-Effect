@@ -1,0 +1,33 @@
+package:
+  name: forecastblurdenoise
+  version: 0.1.0
+
+source:
+  git_url: https://github.com/SepKfr/forecast_blur_denoise
+  git_tag: 0.1.0
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install .
+
+requirements:
+  build:
+    - python
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >= 3.10
+    - torch
+    - gpytorch
+
+about:
+  home: https://github.com/SepKfr/forecast_blur_denoise
+  license: MIT  # Replace with the actual license
+  license_file: LICENSE  # Replace with the actual license file
+
+test:
+  imports:
+    - forecastblurdenoise
+
