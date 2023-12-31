@@ -3,7 +3,7 @@ import random
 import numpy as np
 import torch
 import torch.nn as nn
-from forecasting_models import AutoCorrelation
+from forecastblurdenoise import AutoCorrelation
 
 
 class MultiHeadAttention(nn.Module):
