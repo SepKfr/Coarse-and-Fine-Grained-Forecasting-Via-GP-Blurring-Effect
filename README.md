@@ -10,7 +10,4 @@ Forecast-blur-denoise is the PyTorch-based package for the research paper [Fine-
 
 To install simply run:
 
-```commandline
-pip install ForecastBlurDenoise
-```
 

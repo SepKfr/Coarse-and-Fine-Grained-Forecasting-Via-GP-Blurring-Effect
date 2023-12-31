@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from gpytorch.mlls import DeepApproximateMLL, VariationalELBO
-from blur_denoise_model import BlurDenoiseModel
+from forecastblurdenoise.blur_denoise_model import BlurDenoiseModel
 
 
 class ForecastDenoising(nn.Module):

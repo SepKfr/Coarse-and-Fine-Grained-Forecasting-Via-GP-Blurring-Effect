@@ -3,7 +3,7 @@ package:
   version: 0.1.0
 
 source:
-  git_url: https://github.com/SepKfr/forecast_blur_denoise
+  git_url: https://github.com/SepKfr/forecastblurdenoise
   git_tag: 0.1.0
 
 build:
@@ -25,5 +25,5 @@ about:
 
 test:
   imports:
-    - ForecastBlurDenoise
+    - forecastblurdenoise
 
