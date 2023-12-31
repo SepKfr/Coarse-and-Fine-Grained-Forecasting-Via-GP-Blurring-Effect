@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='ForecastBlurDenoise',
+    name='forecastblurdenoise',
     version='0.1.0',
     packages=['forecast_blur_denoise'],
     install_requires=[
