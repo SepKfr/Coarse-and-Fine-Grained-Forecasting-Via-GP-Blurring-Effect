@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='forecastblurdenoise',
     version='0.1.0',
-    packages=['forecast_blur_denoise'],
+    packages=find_packages(),
     install_requires=[
         # List your dependencies here
         'torch',
