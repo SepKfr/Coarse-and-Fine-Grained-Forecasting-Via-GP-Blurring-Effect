@@ -25,5 +25,5 @@ about:
 
 test:
   imports:
-    - forecastblurdenoise
+    - ForecastBlurDenoise
 
