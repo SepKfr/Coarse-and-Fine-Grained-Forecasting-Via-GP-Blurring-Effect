@@ -115,7 +115,7 @@ trainforecastdenoise.evaluate()
 
 ## Citation
 
-If you are interested in using our forecastblurdenoise model, cite our paper as:
+If you are interested in using our forecastblurdenoise model for your forcasting problem, cite our paper as:
 
 ```bibtex
 @misc{koohfar2023finegrained,
