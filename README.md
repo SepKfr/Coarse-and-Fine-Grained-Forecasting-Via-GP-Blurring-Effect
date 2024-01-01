@@ -113,4 +113,19 @@ trainforecastdenoise.train()
 trainforecastdenoise.evaluate()
 ```
 
+## Citation
+
+If you are interested in using our forecastblurdenoise model, cite our paper as:
+
+```bibtex
+@misc{koohfar2023finegrained,
+      title={Fine-grained Forecasting Models Via Gaussian Process Blurring Effect}, 
+      author={Sepideh Koohfar and Laura Dietz},
+      year={2023},
+      eprint={2312.14280},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+```
+
 
