@@ -2,7 +2,7 @@
 Forecast-blur-denoise is the PyTorch-based package for the research paper [Fine-grained Forecasting Models Via Gaussian Process Blurring Effect](https://arxiv.org/pdf/2312.14280.pdf). This package provides:
 
 - The forecast-blur-denoise framework that can integrate any state-of-the-art neural time series forecasting models as the forecaster and denoiser.
-- Three option for the blur model: Gaussian Process (GP), scaled isotropic noise, and no noise (perform denoising directly on predictions).
+- Three options for the blur model: Gaussian Process (GP), scaled isotropic noise, and no noise (perform denoising directly on predictions).
 - Hyperparameter tuning with Optuna.
 
 ## Datasets
