@@ -127,7 +127,10 @@ def main():
 if __name__ == '__main__':
     main()
 ```
-
+Or run:
+```bash
+./example_usage --data_path path_to_data
+```
 ## Citation
 
 If you are interested in using our forecastblurdenoise model for your forcasting problem, cite our paper as:
