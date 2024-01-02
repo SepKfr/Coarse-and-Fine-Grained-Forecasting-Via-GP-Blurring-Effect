@@ -15,9 +15,8 @@
 
 # Lint as: python3
 
-from Utils.base import DataTypes, InputTypes
-from data.electricity import ElectricityFormatter
-import pandas as pd
+from forecastblurdenoise.Utils.base import DataTypes, InputTypes
+from forecastblurdenoise.data.electricity import ElectricityFormatter
 
 DataFormatter = ElectricityFormatter
 

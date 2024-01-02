@@ -2,8 +2,8 @@ import torch.nn as nn
 import torch
 import random
 import numpy as np
-from modules.encoder import Encoder
-from modules.decoder import Decoder
+from forecastblurdenoise.modules.encoder import Encoder
+from forecastblurdenoise.modules.decoder import Decoder
 
 
 class Transformer(nn.Module):

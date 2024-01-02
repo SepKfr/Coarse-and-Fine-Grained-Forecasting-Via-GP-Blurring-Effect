@@ -1,5 +1,10 @@
-# Forecast-blur-denoise Package
-Forecast-blur-denoise is the PyTorch-based package for the research paper [Fine-grained Forecasting Models Via Gaussian Process Blurring Effect](https://arxiv.org/pdf/2312.14280.pdf). This package provides:
+# Forecastblurdenoise Package
+Forecastblurdenoise is the PyTorch-based package for the research paper [Fine-grained Forecasting Models Via Gaussian Process Blurring Effect](https://arxiv.org/pdf/2312.14280.pdf). 
+
+Methodology:
+The core methodology involves training the blur model parameters end-to-end with forecasting and denoising components. This unique approach enables the underlying forecasting model to learn coarse-grained patterns, while the denoising forecaster fills in fine-grained details. The results demonstrate significant improvements over state-of-the-art models like Autoformer and Informer.
+
+This package provides:
 
 - The forecast-blur-denoise framework that can integrate any state-of-the-art neural time series forecasting models as the forecaster and denoiser.
 - Three options for the blur model: Gaussian Process (GP), scaled isotropic noise, and no noise (perform denoising directly on predictions).
@@ -18,11 +23,12 @@ conda install -c sepkfr forecastblurdenoise
 ```
 
 ## Usage Example
+
 ```python
 import torch
 import argparse
-from modules.transformer import Transformer
-from data_loader import DataLoader
+from forecastblurdenoise.modules.transformer import Transformer
+from forecastblurdenoise.data_loader import DataLoader
 from forecastblurdenoise.train_forecast_denoise import TrainForecastDenoise
 
 # Argument parser for configuring the training process
@@ -53,7 +59,7 @@ target_col = {"traffic": "values",
               "air_quality": "NO2",
               "watershed": "Conductivity"}
 
-#set the experiment name 
+# set the experiment name 
 exp_name = "traffic"
 # Device configuration
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

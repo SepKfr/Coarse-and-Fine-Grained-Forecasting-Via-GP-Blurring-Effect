@@ -18,8 +18,8 @@
 import pandas as pd
 import sklearn.preprocessing
 
-from Utils import utils
-from Utils.base import GenericDataFormatter, DataTypes, InputTypes
+from forecastblurdenoise.Utils import utils
+from forecastblurdenoise.Utils.base import GenericDataFormatter, DataTypes, InputTypes
 
 GenericDataFormatter = GenericDataFormatter
 

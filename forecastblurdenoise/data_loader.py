@@ -5,7 +5,7 @@ import pandas as pd
 import torch
 from torch.utils.data import BatchSampler, TensorDataset
 from pytorch_forecasting.data import TimeSeriesDataSet
-from data import traffic, electricity, solar, air_quality, watershed, exchange
+from forecastblurdenoise.data import solar, traffic, watershed, exchange, air_quality, electricity
 
 
 class DataLoader:

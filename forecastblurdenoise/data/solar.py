@@ -15,25 +15,21 @@
 
 # Lint as: python3
 
-from Utils.base import DataTypes, InputTypes
-from data.traffic import TrafficFormatter
+from forecastblurdenoise.Utils.base import DataTypes, InputTypes
+from forecastblurdenoise.data.electricity import ElectricityFormatter
 
-DataFormatter = TrafficFormatter
+DataFormatter = ElectricityFormatter
 
 
-class ExchangeFormatter(DataFormatter):
+class SolarFormatter(ElectricityFormatter):
 
     _column_definition = [
         ('hours_from_start', DataTypes.REAL_VALUED, InputTypes.TIME),
-        ('OT', DataTypes.REAL_VALUED, InputTypes.TARGET),
-        ('hour', DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
-        ('0', DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
-        ('1', DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
-        ('2', DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
-        ('3', DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
-        ('4', DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
-        ('5', DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
         ('day_of_week', DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
+        ('hour', DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
+        ('Power(MW)', DataTypes.REAL_VALUED, InputTypes.TARGET),
         ('id', DataTypes.REAL_VALUED, InputTypes.ID),
         ('categorical_id', DataTypes.CATEGORICAL, InputTypes.STATIC_INPUT),
+        ('capacity', DataTypes.CATEGORICAL, InputTypes.STATIC_INPUT),
+
     ]

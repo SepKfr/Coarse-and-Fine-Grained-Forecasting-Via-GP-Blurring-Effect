@@ -1,7 +1,7 @@
 import argparse
 import torch
-from modules.transformer import Transformer
-from data_loader import DataLoader
+from forecastblurdenoise.modules.transformer import Transformer
+from forecastblurdenoise.data_loader import DataLoader
 from forecastblurdenoise.train_forecast_denoise import TrainForecastDenoise
 
 
