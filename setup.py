@@ -15,7 +15,7 @@ setup(
     license='MIT',
     author='Sepideh Koohfar',
     author_email='sepideh.koohfar@unh.edu',
-    url='https://github.com/yourusername/forecastblurdenoise',
+    url='https://github.com/SepKfr/Fine_grained_forecasting',
     long_description='file: README.md',
     long_description_content_type='text/markdown',
     classifiers=[

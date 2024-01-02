@@ -2,7 +2,7 @@ import argparse
 import torch
 from forecastblurdenoise.modules.transformer import Transformer
 from forecastblurdenoise.data_loader import DataLoader
-from forecastblurdenoise.train_forecast_denoise import TrainForecastDenoise
+from forecastblurdenoise.train_forecast_blur_denoise import TrainForecastBlurDenoise
 
 
 def main():

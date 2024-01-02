@@ -8,10 +8,10 @@ import optuna
 import torch.nn.functional as F
 from optuna.trial import TrialState
 from torch.optim import Adam
-from forecastblurdenoise.forecast_denoising import ForecastDenoising
+from forecastblurdenoise.forecast_blur_denoise import ForecastBlurDenoise
 
 
-class TrainForecastDenoise:
+class TrainForecastBlurDenoise:
     def __init__(self,
                  forecasting_model,
                  train,
