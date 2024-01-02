@@ -4,7 +4,7 @@ setup(
     name='forecastblurdenoise',
     version=__version__,
     packages=find_packages(),
-    python_requires='>=3.10',
+    python_requires='>=3.9',
     install_requires=[
         'gpytorch>=1.9.0',
         'torch>=2.0.1',
