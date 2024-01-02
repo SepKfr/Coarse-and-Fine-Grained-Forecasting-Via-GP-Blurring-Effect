@@ -26,6 +26,7 @@ def main():
     parser.add_argument("--no-noise", type=lambda x: str(x).lower() == "true", default="False")
     parser.add_argument("--add_noise_only_at_training", type=lambda x: str(x).lower() == "true", default="False")
     parser.add_argument("--num_epochs", type=int, default=5)
+    parser.add_argument("--data_path", type=str, required=True)
 
     args = parser.parse_args()
 
@@ -48,7 +49,8 @@ def main():
                              max_train_sample=8,
                              max_test_sample=8,
                              batch_size=4,
-                             device=device)
+                             device=device,
+                             data_path=args.data_path)
 
     # Extracting shapes from training data for model configuration
     train_enc, train_dec, train_y = next(iter(data_loader.train_loader))

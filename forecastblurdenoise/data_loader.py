@@ -16,7 +16,8 @@ class DataLoader:
                  max_train_sample,
                  max_test_sample,
                  batch_size,
-                 device):
+                 device,
+                 data_path):
         data_formatter = {"traffic": traffic.TrafficFormatter,
                           "electricity": electricity.ElectricityFormatter,
                           "solar": solar.SolarFormatter,
@@ -34,8 +35,7 @@ class DataLoader:
         random.seed(seed)
         np.random.seed(seed)
 
-        data_csv_path = "~/research/Corruption-resilient-Forecasting-Models/{}.csv".format(exp_name)
-        data = pd.read_csv(data_csv_path, dtype={'date': str})
+        data = pd.read_csv(data_path, dtype={'date': str})
         data.sort_values(by=["id", "hours_from_start"], inplace=True)
         data = data_formatter[exp_name](pred_len).transform_data(data)
 
@@ -76,9 +76,9 @@ class DataLoader:
         self.valid_dataset = self.get_valid_dataset(valid_data, self.max_encoder_length, self.pred_len)
         self.test_dataset = self.get_test_dataset(test_data, self.max_encoder_length, self.pred_len)
 
-        self.train_loader,  self.train_loader2 = self.create_dataloader(train_data, device, num_samples=max_train_sample)
-        self.valid_loader, self.valid_loader2 = self.create_dataloader(valid_data, device, num_samples=max_test_sample)
-        self.test_loader, self.test_loader2 = self.create_dataloader(test_data, device, num_samples=max_test_sample)
+        self.train_loader = self.create_dataloader(train_data, device, num_samples=max_train_sample)
+        self.valid_loader = self.create_dataloader(valid_data, device, num_samples=max_test_sample)
+        self.test_loader = self.create_dataloader(test_data, device, num_samples=max_test_sample)
 
     def get_train_dataset(self, train_data, min_encoder_length, min_prediction_length):
         return self.create_time_series_dataset(train_data, min_encoder_length, min_prediction_length)
@@ -125,4 +125,4 @@ class DataLoader:
                                        x_dec.to(device),
                                        y.to(device))
 
-        return torch.utils.data.DataLoader(tensor_dataset, batch_size=self.batch_size), data_loader
+        return torch.utils.data.DataLoader(tensor_dataset, batch_size=self.batch_size)
