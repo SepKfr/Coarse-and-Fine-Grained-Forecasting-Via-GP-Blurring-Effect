@@ -31,6 +31,30 @@ conda install -c sepkfr forecastblurdenoise
 ./example_usage --exp_name toy_data
 ```
 
+## Command Line Args
+
+```text
+- exp_name (str): Name of the experiment (dataset).
+- forecating_model_name (str): Name of the forecasting model.
+- n_jobs (int): Total number of jobs for Optuna.
+- num_epochs (int): Total number of epochs.
+- forecasting_model (nn.Module): The underlying forecasting model.
+- train (DataLoader): DataLoader for training data.
+- valid (DataLoader): DataLoader for validation data.
+- test (DataLoader): DataLoader for test data.
+- noise_type (str): Type of noise to be added during denoising ('gp', 'iso', 'no_noise').
+- add_noise_only_at_training (bool): Flag indicating whether to add noise only during training.
+- src_input_size (int): Size of the source input.
+- tgt_input_size (int): Size of the target input.
+- tgt_output_size (int): Size of the target output.
+- pred_len (int): Length of the prediction horizon.
+- num_inducing (int): Number of inducing points for GP regression.
+- hyperparameters (dict): Hyperparameters to be optimized.
+- args: Command line arguments.
+- seed (int): Random seed for reproducibility.
+- device: Device on which to run the training.
+```
+
 ### Run as a Library 
 
 ```python

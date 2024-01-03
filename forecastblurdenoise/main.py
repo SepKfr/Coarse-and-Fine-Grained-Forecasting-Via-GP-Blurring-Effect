@@ -56,8 +56,7 @@ def main():
     parser = argparse.ArgumentParser(description="forecast-denoise argument parser")
 
     # Forecasting model parameters
-    parser.add_argument("--attn_type", type=str, default='autoformer')
-    parser.add_argument("--model_name", type=str, default="autoformer")
+    parser.add_argument("--forecasting_model_name", type=str, default="autoformer")
     parser.add_argument("--exp_name", type=str, default='exchange')
     parser.add_argument("--cuda", type=str, default="cuda:0")
     parser.add_argument("--noise_type", type=str, default="gp")
@@ -118,7 +117,7 @@ def main():
                                     d_ff=d_model * 4,
                                     d_k=d_model, n_heads=8,
                                     n_layers=1, device=device,
-                                    attn_type=args.attn_type,
+                                    attn_type="autoformer",
                                     seed=1234).to(device)
 
     # Hyperparameter search space (change accordingly)

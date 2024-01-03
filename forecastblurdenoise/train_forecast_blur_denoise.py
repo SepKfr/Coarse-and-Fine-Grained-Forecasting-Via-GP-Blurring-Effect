@@ -15,7 +15,7 @@ class TrainForecastBlurDenoise:
     def __init__(self,
                  *,
                  exp_name='toy_data',
-                 model_name="LSTM",
+                 forecasting_model_name="LSTM",
                  n_jobs=1,
                  n_trials=5,
                  num_epochs=10,
@@ -28,15 +28,18 @@ class TrainForecastBlurDenoise:
                  input_size,
                  output_size,
                  pred_len,
+                 num_inducing,
                  hyperparameters,
                  seed,
-                 device,
-                 num_inducing
-                 ):
+                 device):
         """
         Trainer class for training the ForecastDenoising model using Optuna hyperparameter optimization.
 
         Args:
+        - exp_name (str): Name of the experiment (dataset).
+        - forecating_model_name (str): Name of the forecasting model.
+        - n_jobs (int): Total number of jobs for Optuna.
+        - num_epochs (int): Total number of epochs.
         - forecasting_model (nn.Module): The underlying forecasting model.
         - train (DataLoader): DataLoader for training data.
         - valid (DataLoader): DataLoader for validation data.
@@ -47,11 +50,11 @@ class TrainForecastBlurDenoise:
         - tgt_input_size (int): Size of the target input.
         - tgt_output_size (int): Size of the target output.
         - pred_len (int): Length of the prediction horizon.
+        - num_inducing (int): Number of inducing points for GP regression.
         - hyperparameters (dict): Hyperparameters to be optimized.
         - args: Command line arguments.
         - seed (int): Random seed for reproducibility.
         - device: Device on which to run the training.
-        - num_inducing (int): Number of inducing points for GP regression.
         """
 
         random.seed(seed)
@@ -62,7 +65,7 @@ class TrainForecastBlurDenoise:
         self.n_trials = n_trials
         self.num_epochs = num_epochs
         self.exp_name = exp_name
-        self.model_name = model_name
+        self.forecasting_model_name = forecasting_model_name
 
         gp = True if noise_type == "gp" else False
         iso = True if noise_type == "iso" else False
@@ -86,7 +89,7 @@ class TrainForecastBlurDenoise:
         if not os.path.exists(self.model_path):
             os.makedirs(self.model_path)
 
-        self.model_name = "{}_{}_{}_{}{}{}{}{}{}".format(model_name, exp_name, pred_len, seed,
+        self.model_name = "{}_{}_{}_{}{}{}{}{}{}".format(forecasting_model_name, exp_name, pred_len, seed,
                                                            "_denoise",
                                                            "_gp" if gp else "",
                                                            "_predictions" if no_noise else "",
