@@ -9,7 +9,7 @@ This package provides:
 - The forecast-blur-denoise framework that can integrate any state-of-the-art neural time series forecasting models as the forecaster and denoiser.
 - Three options for the blur model: Gaussian Process (GP), scaled isotropic noise, and no noise (perform denoising directly on predictions).
 - A data loader module that works with the provided datasets in Google Drive.
-- A forecasting model example (Autoformer
+- A forecasting model example (Autoformer)
 - Hyperparameter tuning with Optuna.
 
 ## Datasets
