@@ -16,7 +16,7 @@ setup(
     author='Sepideh Koohfar',
     author_email='sepideh.koohfar@unh.edu',
     url='https://github.com/SepKfr/Fine_grained_forecasting',
-    long_description='file: README.md',
+    long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     classifiers=[
         'Programming Language :: Python :: 3',
