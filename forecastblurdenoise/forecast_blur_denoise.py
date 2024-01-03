@@ -107,9 +107,8 @@ class ForecastBlurDenoise(nn.Module):
                  no_noise: bool,
                  add_noise_only_at_training: bool,
                  pred_len: int,
-                 src_input_size: int,
-                 tgt_input_size: int,
-                 tgt_output_size: int,
+                 input_size: int,
+                 output_size: int,
                  num_inducing: int,
                  d_model: int = 32):
         """
@@ -123,9 +122,8 @@ class ForecastBlurDenoise(nn.Module):
          (denoise predictions directly).
         - add_noise_only_at_training (bool): Flag indicating whether to add noise only during training.
         - pred_len (int): Length of the prediction horizon.
-        - src_input_size (int): Size of the source input.
-        - tgt_input_size (int): Size of the target input.
-        - tgt_output_size (int): Size of the target output.
+        - src_input_size (int): Number of features in input.
+        - tgt_output_size (int): Number of features in output.
         - num_inducing (int): Number of inducing points for GP model.
         - d_model (int): Dimensionality of the model (default is 32).
         """
@@ -146,9 +144,9 @@ class ForecastBlurDenoise(nn.Module):
                                          iso=iso,
                                          num_inducing=num_inducing)
 
-        self.final_projection = nn.Linear(d_model, tgt_output_size)
-        self.enc_embedding = nn.Linear(src_input_size, d_model)
-        self.dec_embedding = nn.Linear(tgt_input_size, d_model)
+        self.final_projection = nn.Linear(d_model, output_size)
+        self.enc_embedding = nn.Linear(input_size, d_model)
+        self.dec_embedding = nn.Linear(input_size, d_model)
         self.d_model = d_model
 
     def forward(self, enc_inputs, dec_inputs, y_true=None):

@@ -13,18 +13,22 @@ from forecastblurdenoise.forecast_blur_denoise import ForecastBlurDenoise
 
 class TrainForecastBlurDenoise:
     def __init__(self,
+                 *,
+                 exp_name='toy_data',
+                 model_name="LSTM",
+                 n_jobs=1,
+                 n_trials=5,
+                 num_epochs=10,
                  forecasting_model,
                  train,
                  valid,
                  test,
                  noise_type,
                  add_noise_only_at_training,
-                 src_input_size,
-                 tgt_input_size,
-                 tgt_output_size,
+                 input_size,
+                 output_size,
                  pred_len,
                  hyperparameters,
-                 args,
                  seed,
                  device,
                  num_inducing
@@ -54,6 +58,12 @@ class TrainForecastBlurDenoise:
         np.random.seed(seed)
         torch.random.manual_seed(seed)
 
+        self.n_jobs = n_jobs
+        self.n_trials = n_trials
+        self.num_epochs = num_epochs
+        self.exp_name = exp_name
+        self.model_name = model_name
+
         gp = True if noise_type == "gp" else False
         iso = True if noise_type == "iso" else False
         no_noise = True if noise_type == "no_noise" else False
@@ -61,30 +71,28 @@ class TrainForecastBlurDenoise:
         self.train_data, self.valid_data, self.test_data = train, valid, test
         self.forecasting_model = forecasting_model
 
-        self.forecast_denoising_model = ForecastDenoising(forecasting_model=forecasting_model,
-                                                          gp=gp, iso=iso, no_noise=no_noise,
-                                                          add_noise_only_at_training=add_noise_only_at_training,
-                                                          src_input_size=src_input_size,
-                                                          tgt_input_size=tgt_input_size,
-                                                          tgt_output_size=tgt_output_size,
-                                                          pred_len=pred_len,
-                                                          num_inducing=num_inducing).to(device)
+        self.forecast_denoising_model = ForecastBlurDenoise(forecasting_model=forecasting_model,
+                                                            gp=gp, iso=iso, no_noise=no_noise,
+                                                            add_noise_only_at_training=add_noise_only_at_training,
+                                                            input_size=input_size,
+                                                            output_size=output_size,
+                                                            pred_len=pred_len,
+                                                            num_inducing=num_inducing).to(device)
 
         self.hyperparameters = hyperparameters
-        self.args = args
         self.best_overall_valid_loss = 1e10
         self.best_forecast_denoise_model = nn.Module()
-        self.model_path = "models_{}_{}".format(args.exp_name, pred_len)
+        self.model_path = "models_{}_{}".format(exp_name, pred_len)
         if not os.path.exists(self.model_path):
             os.makedirs(self.model_path)
 
-        self.model_name = "{}_{}_{}_{}{}{}{}{}{}".format(args.model_name, args.exp_name, pred_len, seed,
+        self.model_name = "{}_{}_{}_{}{}{}{}{}{}".format(model_name, exp_name, pred_len, seed,
                                                            "_denoise",
                                                            "_gp" if gp else "",
                                                            "_predictions" if no_noise else "",
                                                            "_iso" if iso else "",
                                                            "_add_noise_only_at_training" if
-                                                         add_noise_only_at_training else "")
+                                                           add_noise_only_at_training else "")
         self.pred_len = pred_len
 
     def run_optuna(self):
@@ -94,8 +102,8 @@ class TrainForecastBlurDenoise:
         study = optuna.create_study(study_name="train forecast denoise model",
                                     direction="minimize",
                                     sampler=optuna.samplers.TPESampler())
-        study.optimize(self.objective, n_trials=self.args.n_trials,
-                       n_jobs=self.args.n_jobs)
+        study.optimize(self.objective, n_trials=self.n_trials,
+                       n_jobs=self.n_jobs)
 
         pruned_trials = study.get_trials(deepcopy=False, states=[TrialState.PRUNED])
         complete_trials = study.get_trials(deepcopy=False, states=[TrialState.COMPLETE])
@@ -139,7 +147,7 @@ class TrainForecastBlurDenoise:
 
         best_trial_valid_loss = 1e10
 
-        for epoch in range(self.args.num_epochs):
+        for epoch in range(self.num_epochs):
             train_loss = 0
             self.forecast_denoising_model.train()
 
@@ -210,7 +218,7 @@ class TrainForecastBlurDenoise:
         errors = {self.model_name: {'MSE': f"{mse_loss:.3f}", 'MAE': f"{mae_loss: .3f}"}}
         print(errors)
 
-        error_path = "reported_errors_{}.csv".format(self.args.exp_name)
+        error_path = "reported_errors_{}.csv".format(self.exp_name)
 
         df = pd.DataFrame.from_dict(errors, orient='index')
 

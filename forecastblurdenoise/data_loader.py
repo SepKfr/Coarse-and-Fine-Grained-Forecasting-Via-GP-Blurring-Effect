@@ -8,7 +8,7 @@ from pytorch_forecasting.data import TimeSeriesDataSet
 from forecastblurdenoise.data import solar, traffic, watershed, exchange, air_quality, electricity
 
 
-class DataLoader:
+class CustomDataLoader:
     def __init__(self, exp_name,
                  max_encoder_length,
                  pred_len,
@@ -79,6 +79,10 @@ class DataLoader:
         self.train_loader = self.create_dataloader(train_data, device, num_samples=max_train_sample)
         self.valid_loader = self.create_dataloader(valid_data, device, num_samples=max_test_sample)
         self.test_loader = self.create_dataloader(test_data, device, num_samples=max_test_sample)
+
+        train_enc, train_dec, train_y = next(iter(self.train_loader))
+        self.input_size = train_enc.shape[2]
+        self.output_size = train_dec.shape[2]
 
     def get_train_dataset(self, train_data, min_encoder_length, min_prediction_length):
         return self.create_time_series_dataset(train_data, min_encoder_length, min_prediction_length)

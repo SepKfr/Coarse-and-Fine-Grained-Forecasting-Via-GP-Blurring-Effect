@@ -27,7 +27,7 @@ setup(
         "Topic :: Scientific/Engineering :: Machine Learning"],
     entry_points={
         'console_scripts': [
-             'example_usage=forecastblurdenoise.test:main',
+             'example_usage=forecastblurdenoise.main:main',
          ],
     }
 )
