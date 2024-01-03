@@ -23,8 +23,7 @@ setup(
         'Programming Language :: Python :: 3.10',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
-        "Topic :: Scientific/Engineering :: Artificial Intelligence",
-        "Topic :: Scientific/Engineering :: Machine Learning"],
+        "Topic :: Scientific/Engineering :: Artificial Intelligence"],
     entry_points={
         'console_scripts': [
              'example_usage=forecastblurdenoise.main:main',
