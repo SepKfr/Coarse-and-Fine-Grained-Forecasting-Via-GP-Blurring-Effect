@@ -3,6 +3,7 @@ from forecastblurdenoise import __version__
 setup(
     name='forecastblurdenoise',
     version=__version__,
+    author='Sepideh Koohfar',
     packages=find_packages(),
     python_requires='>=3.9',
     install_requires=[
@@ -13,7 +14,6 @@ setup(
         'optuna>=3.3.0'
     ],
     license='MIT',
-    author='Sepideh Koohfar',
     author_email='sepideh.koohfar@unh.edu',
     url='https://github.com/SepKfr/Fine_grained_forecasting',
     long_description=open('README.md').read(),
@@ -26,7 +26,7 @@ setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence"],
     entry_points={
         'console_scripts': [
-             'example_usage=forecastblurdenoise.main:main',
+             'example_usage=forecastblurdenoise.main:main'
          ],
     }
 )

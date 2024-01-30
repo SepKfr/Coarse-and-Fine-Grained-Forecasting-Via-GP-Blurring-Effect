@@ -1,16 +1,16 @@
 import os
 import random
+import pandas as pd
 import numpy as np
 import torch
 import torch.nn as nn
 import optuna
+import torch.nn.functional as F
 from optuna.trial import TrialState
 from torch.optim import Adam
 from forecast_blur_denoise import ForecastBlurDenoise
 
 
-# Define a class for training the ForecastBlurDenoise model
-# using Optuna for hyperparameter optimization.
 class TrainForecastBlurDenoise:
     def __init__(self,
                  *,
@@ -38,7 +38,7 @@ class TrainForecastBlurDenoise:
 
         Args:
         - exp_name (str): Name of the experiment (dataset).
-        - forecasting_model_name (str): Name of the forecasting model.
+        - forecating_model_name (str): Name of the forecasting model.
         - n_jobs (int): Total number of jobs for Optuna.
         - num_epochs (int): Total number of epochs.
         - forecasting_model (nn.Module): The underlying forecasting model.
@@ -58,28 +58,23 @@ class TrainForecastBlurDenoise:
         - device: Device on which to run the training.
         """
 
-        # Set random seeds for reproducibility
         random.seed(seed)
         np.random.seed(seed)
         torch.random.manual_seed(seed)
 
-        # Initialize class attributes
         self.n_jobs = n_jobs
         self.n_trials = n_trials
         self.num_epochs = num_epochs
         self.exp_name = exp_name
         self.forecasting_model_name = forecasting_model_name
 
-        # Set flags based on noise type
         gp = True if noise_type == "gp" else False
         iso = True if noise_type == "iso" else False
         no_noise = True if noise_type == "no_noise" else False
 
-        # Set data loaders and forecasting model
         self.train_data, self.valid_data, self.test_data = train, valid, test
         self.forecasting_model = forecasting_model
 
-        # Initialize ForecastBlurDenoise model with specified parameters
         self.forecast_denoising_model = ForecastBlurDenoise(forecasting_model=forecasting_model,
                                                             gp=gp, iso=iso, no_noise=no_noise,
                                                             add_noise_only_at_training=add_noise_only_at_training,
@@ -109,24 +104,20 @@ class TrainForecastBlurDenoise:
         """
         Run the Optuna hyperparameter optimization process for the ForecastDenoising model.
         """
-        # Create Optuna study
         study = optuna.create_study(study_name="train forecast denoise model",
                                     direction="minimize",
                                     sampler=optuna.samplers.TPESampler())
         study.optimize(self.objective, n_trials=self.n_trials,
                        n_jobs=self.n_jobs)
 
-        # Get pruned and complete trials
         pruned_trials = study.get_trials(deepcopy=False, states=[TrialState.PRUNED])
         complete_trials = study.get_trials(deepcopy=False, states=[TrialState.COMPLETE])
 
-        # Print study statistics
         print("Study statistics: ")
         print("  Number of finished trials: ", len(study.trials))
         print("  Number of pruned trials: ", len(pruned_trials))
         print("  Number of complete trials: ", len(complete_trials))
 
-        # Print information about the best trial
         print("Best trial:")
         trial = study.best_trial
 
@@ -146,12 +137,10 @@ class TrainForecastBlurDenoise:
         Returns:
         - best_trial_valid_loss: Best validation loss achieved during the training.
         """
-        # Generate a dictionary of hyperparameter values for the current trial
         param_dict = dict()
         for param, values in self.hyperparameters.items():
             param_dict[param] = trial.suggest_categorical(param, values)
 
-        # Set hyperparameter values for the forecast denoise model
         forecast_denoise_model_attributes = [attr for attr in dir(self.forecast_denoising_model) if
                                              not callable(getattr(self.forecast_denoising_model, attr))]
 
@@ -159,18 +148,15 @@ class TrainForecastBlurDenoise:
             if attr in self.hyperparameters.keys():
                 setattr(self.forecast_denoising_model, attr, param_dict[attr])
 
-        # Initialize optimizer and learning rate scheduler
         optimizer = Adam(self.forecast_denoising_model.parameters(), lr=param_dict["lr"])
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, self.num_iteration)
 
         best_trial_valid_loss = 1e10
 
-        # Train the model for the specified number of epochs
         for epoch in range(self.num_epochs):
             train_loss = 0
             self.forecast_denoising_model.train()
 
-            # Iterate over training data
             for train_enc, train_dec, train_y in self.train_data:
                 output_fore_den, loss = self.forecast_denoising_model(train_enc, train_dec, train_y)
                 train_loss += loss.item()
@@ -179,3 +165,73 @@ class TrainForecastBlurDenoise:
                 optimizer.step()
                 scheduler.step()
 
+            trial.report(loss, epoch)
+            if trial.should_prune():
+                raise optuna.TrialPruned()
+
+            self.forecast_denoising_model.eval()
+            valid_loss = 0
+
+            for valid_enc, valid_dec, valid_y in self.valid_data:
+                output, loss = self.forecast_denoising_model(valid_enc, valid_dec, valid_y)
+                valid_loss += loss.item()
+
+                if valid_loss < best_trial_valid_loss:
+                    best_trial_valid_loss = valid_loss
+                    if best_trial_valid_loss < self.best_overall_valid_loss:
+                        self.best_overall_valid_loss = best_trial_valid_loss
+                        self.best_forecast_denoise_model = self.forecast_denoising_model
+                        torch.save({'model_state_dict': self.best_forecast_denoise_model.state_dict()},
+                                   os.path.join(self.model_path, "{}".format(self.model_name)))
+
+            return best_trial_valid_loss
+
+    def train(self):
+        """
+        Train the ForecastDenoising model using Optuna hyperparameter optimization.
+        """
+        self.run_optuna()
+
+    def evaluate(self):
+        """
+        Evaluate the performance of the best ForecastDenoising model on the test set.
+        """
+        self.best_forecast_denoise_model.eval()
+
+        _, _, test_y = next(iter(self.test_data))
+        total_b = len(list(iter(self.test_data)))
+
+        predictions = torch.zeros(total_b, test_y.shape[0], self.pred_len)
+        test_y_tot = torch.zeros(total_b, test_y.shape[0], self.pred_len)
+
+        j = 0
+
+        for test_enc, test_dec, test_y in self.test_data:
+            output, _ = self.best_forecast_denoise_model(test_enc, test_dec)
+            predictions[j] = output.squeeze(-1).cpu().detach()
+            test_y_tot[j] = test_y[:, -self.pred_len:, :].squeeze(-1).cpu().detach()
+            j += 1
+
+        predictions = predictions.reshape(-1, 1)
+        test_y = test_y_tot.reshape(-1, 1)
+        normaliser = test_y.abs().mean()
+
+        test_loss = F.mse_loss(predictions, test_y).item() / normaliser
+        mse_loss = test_loss
+
+        mae_loss = F.l1_loss(predictions, test_y).item() / normaliser
+        mae_loss = mae_loss
+
+        errors = {self.model_name: {'MSE': f"{mse_loss:.3f}", 'MAE': f"{mae_loss: .3f}"}}
+        print(errors)
+
+        error_path = "reported_errors_{}.csv".format(self.exp_name)
+
+        df = pd.DataFrame.from_dict(errors, orient='index')
+
+        if os.path.exists(error_path):
+            df_old = pd.read_csv(error_path)
+            df_new = pd.concat([df_old, df], axis=0)
+            df_new.to_csv(error_path)
+        else:
+            df.to_csv(error_path)
