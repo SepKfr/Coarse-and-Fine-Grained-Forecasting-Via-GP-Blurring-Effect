@@ -1,5 +1,7 @@
 import os
 import random
+
+import gpytorch.settings
 import pandas as pd
 import numpy as np
 import torch
@@ -8,7 +10,7 @@ import optuna
 import torch.nn.functional as F
 from optuna.trial import TrialState
 from torch.optim import Adam
-from forecastblurdenoise.forecast_blur_denoise import ForecastBlurDenoise
+from forecast_blur_denoise import ForecastBlurDenoise
 
 
 class TrainForecastBlurDenoise:
@@ -19,6 +21,7 @@ class TrainForecastBlurDenoise:
                  n_jobs=1,
                  n_trials=5,
                  num_epochs=10,
+                 num_iteration,
                  forecasting_model,
                  train,
                  valid,
@@ -84,18 +87,19 @@ class TrainForecastBlurDenoise:
 
         self.hyperparameters = hyperparameters
         self.best_overall_valid_loss = 1e10
+        self.num_iteration = num_iteration
         self.best_forecast_denoise_model = nn.Module()
         self.model_path = "models_{}_{}".format(exp_name, pred_len)
         if not os.path.exists(self.model_path):
             os.makedirs(self.model_path)
 
         self.model_name = "{}_{}_{}_{}{}{}{}{}{}".format(forecasting_model_name, exp_name, pred_len, seed,
-                                                           "_denoise",
-                                                           "_gp" if gp else "",
-                                                           "_predictions" if no_noise else "",
-                                                           "_iso" if iso else "",
-                                                           "_add_noise_only_at_training" if
-                                                           add_noise_only_at_training else "")
+                                                         "_denoise",
+                                                         "_gp" if gp else "",
+                                                         "_predictions" if no_noise else "",
+                                                         "_iso" if iso else "",
+                                                         "_add_noise_only_at_training" if
+                                                         add_noise_only_at_training else "")
         self.pred_len = pred_len
 
     def run_optuna(self):
@@ -147,6 +151,7 @@ class TrainForecastBlurDenoise:
                 setattr(self.forecast_denoising_model, attr, param_dict[attr])
 
         optimizer = Adam(self.forecast_denoising_model.parameters(), lr=param_dict["lr"])
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, self.num_iteration)
 
         best_trial_valid_loss = 1e10
 
@@ -160,6 +165,7 @@ class TrainForecastBlurDenoise:
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
+                scheduler.step()
 
             trial.report(loss, epoch)
             if trial.should_prune():

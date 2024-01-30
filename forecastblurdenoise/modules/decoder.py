@@ -2,9 +2,9 @@ import random
 import numpy as np
 import torch
 import torch.nn as nn
-from forecastblurdenoise.modules.multi_head_attention import MultiHeadAttention
-from forecastblurdenoise.modules.feedforward import PoswiseFeedForwardNet
-from forecastblurdenoise.modules.encoding import PositionalEncoding
+from modules.multi_head_attention import MultiHeadAttention
+from modules.feedforward import PoswiseFeedForwardNet
+from modules.encoding import PositionalEncoding
 
 
 class DecoderLayer(nn.Module):

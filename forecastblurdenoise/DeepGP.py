@@ -1,5 +1,5 @@
 import torch
-from gpytorch.distributions import MultivariateNormal
+from gpytorch.distributions import MultivariateNormal, MultitaskMultivariateNormal
 from gpytorch.kernels import ScaleKernel, RBFKernel
 from gpytorch.likelihoods import MultitaskGaussianLikelihood
 from gpytorch.means import ConstantMean, LinearMean
@@ -48,6 +48,7 @@ class ToyDeepGPHiddenLayer(DeepGPLayer):
 
 class DeepGPp(DeepGP):
     def __init__(self, num_hidden_dims, num_inducing):
+
         hidden_layer = ToyDeepGPHiddenLayer(
             input_dims=num_hidden_dims,
             output_dims=num_hidden_dims,

@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from gpytorch.mlls import DeepApproximateMLL, VariationalELBO
-from forecastblurdenoise.DeepGP import DeepGPp
+from DeepGP import DeepGPp
 
 
 class BlurDenoiseModel(nn.Module):
@@ -194,8 +194,10 @@ class ForecastBlurDenoise(nn.Module):
 
         # If using GP and during training, compute MLL loss
         if self.gp and self.training:
+
             mll = DeepApproximateMLL(
                 VariationalELBO(self.de_model.deep_gp.likelihood, self.de_model.deep_gp, self.d_model))
+
             mll_error = -mll(dist, y_true).mean()
 
         # If ground truth is available, compute MSE loss and combine with MLL loss
