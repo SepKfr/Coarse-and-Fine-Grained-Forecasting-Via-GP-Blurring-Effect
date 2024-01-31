@@ -21,7 +21,7 @@ In this repository, we have provided the links to google Drive of six pre-proces
 To install run one of the following:
 
 ```bash
-pip install forecastblurdenoise==1.0.3
+pip install forecastblurdenoise==1.0.5
 conda install sepkfr::forecastblurdenoise
 ```
 
