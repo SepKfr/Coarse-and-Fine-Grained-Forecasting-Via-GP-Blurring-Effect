@@ -101,6 +101,6 @@ class CustomDataLoader:
         dataset = TensorDataset(X[:, :-self.pred_len, :].to(self.device),
                                 X[:, -self.pred_len:, :].to(self.device),
                                 Y.to(self.device))
-        dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
+        dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True, drop_last=True)
 
         return dataloader

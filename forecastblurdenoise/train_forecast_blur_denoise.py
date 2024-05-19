@@ -153,7 +153,7 @@ class TrainForecastBlurDenoise:
 
         best_trial_valid_loss = 1e10
 
-        for epoch in range(self.num_epochs):
+        for epoch in range(35):
             train_loss = 0
             self.forecast_denoising_model.train()
 
@@ -164,10 +164,6 @@ class TrainForecastBlurDenoise:
                 loss.backward()
                 optimizer.step()
                 scheduler.step()
-
-            trial.report(loss, epoch)
-            if trial.should_prune():
-                raise optuna.TrialPruned()
 
             self.forecast_denoising_model.eval()
             valid_loss = 0
