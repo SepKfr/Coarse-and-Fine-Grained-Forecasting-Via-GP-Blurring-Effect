@@ -68,9 +68,9 @@ class TrainForecastBlurDenoise:
         self.exp_name = exp_name
         self.forecasting_model_name = forecasting_model_name
 
-        gp = True if noise_type == "gp" else False
-        iso = True if noise_type == "iso" else False
-        no_noise = True if noise_type == "no_noise" else False
+        gp = False
+        iso = False
+        no_noise = False
 
         self.train_data, self.valid_data, self.test_data = train, valid, test
         self.forecasting_model = forecasting_model
@@ -184,6 +184,10 @@ class TrainForecastBlurDenoise:
                         torch.save({'model_state_dict': self.best_forecast_denoise_model.state_dict()},
                                    os.path.join(self.model_path, "{}".format(self.model_name)))
 
+            if epoch % 5 == 0:
+                print(f"train loss: {train_loss:.3f}")
+                print(f"valid loss: {valid:.3f}")
+                
             return best_trial_valid_loss
 
     def train(self):
@@ -214,15 +218,23 @@ class TrainForecastBlurDenoise:
 
         predictions = predictions.reshape(-1, 1)
         test_y = test_y_tot.reshape(-1, 1)
-        normaliser = test_y.abs().mean()
 
-        test_loss = F.mse_loss(predictions, test_y).item() / normaliser
-        mse_loss = test_loss
+        tensor_path = f"{self.exp_name}"
+        if not os.path.exists(tensor_path):
+            os.makedirs(tensor_path)
+            torch.save({"predictions": predictions, "test_y": test_y},
+                       os.path.join(tensor_path, f"{self.model_name}.pt"))
 
-        mae_loss = F.l1_loss(predictions, test_y).item() / normaliser
-        mae_loss = mae_loss
+        test_loss = nn.MSELoss(reduction="none")(predictions, test_y)
+        mse_loss = torch.mean(test_loss)
+        mse_loss_std = torch.std(test_loss)
 
-        errors = {self.model_name: {'MSE': f"{mse_loss:.3f}", 'MAE': f"{mae_loss: .3f}"}}
+        mae_loss = nn.L1Loss(reduction="none")(predictions, test_y)
+        mae_loss = torch.mean(mae_loss)
+        mae_loss_std = torch.std(test_loss)
+
+        errors = {self.model_name: {'MSE': f"{mse_loss:.3f} {mse_loss_std:.4f}",
+                                    'MAE': f"{mae_loss: .3f} {mae_loss_std:.4f}"}}
         print(errors)
 
         error_path = "reported_errors_{}.csv".format(self.exp_name)

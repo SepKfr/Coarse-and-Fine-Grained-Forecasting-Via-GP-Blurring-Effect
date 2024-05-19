@@ -71,15 +71,15 @@ def main():
 
     # Forecasting model parameters
 
-    parser.add_argument("--forecasting_model_name", type=str, default="autoformer")
+    parser.add_argument("--forecasting_model_name", type=str, default="ATA")
     parser.add_argument("--exp_name", type=str, default='solar')
     parser.add_argument("--cuda", type=str, default="cuda:0")
     parser.add_argument("--noise_type", type=str, default="gp")
     parser.add_argument("--seed", type=int, default=1234)
     parser.add_argument("--pred_len", type=int, default=96)
     parser.add_argument("--max_encoder_length", type=int, default=192)
-    parser.add_argument("--max_train_sample", type=int, default=32000)
-    parser.add_argument("--max_test_sample", type=int, default=3840)
+    parser.add_argument("--max_train_sample", type=int, default=2560)
+    parser.add_argument("--max_test_sample", type=int, default=512)
     parser.add_argument("--batch_size", type=int, default=256)
     parser.add_argument("--n_trials", type=int, default=50)
     parser.add_argument("--n_jobs", type=int, default=1)
@@ -87,7 +87,7 @@ def main():
     parser.add_argument("--learning_residual", type=lambda x: str(x).lower() == "true", default="False")
     parser.add_argument("--no-noise", type=lambda x: str(x).lower() == "true", default="False")
     parser.add_argument("--add_noise_only_at_training", type=lambda x: str(x).lower() == "true", default="False")
-    parser.add_argument("--num_epochs", type=int, default=10)
+    parser.add_argument("--num_epochs", type=int, default=35)
     parser.add_argument("--data_path", type=str, default="~/research/Corruption-resilient-Forecasting-Models/solar.csv")
 
     args = parser.parse_args()

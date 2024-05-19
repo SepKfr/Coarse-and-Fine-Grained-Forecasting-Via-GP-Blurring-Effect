@@ -166,7 +166,7 @@ class ForecastBlurDenoise(nn.Module):
         loss = 0
 
         # Indicate whether to perform denoising
-        denoise = True
+        denoise = False
 
         '''
         If add_noise_only_at_training flag is set and during test 

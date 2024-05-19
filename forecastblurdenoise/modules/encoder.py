@@ -11,7 +11,7 @@ from modules.encoding import PositionalEncoding
 class EncoderLayer(nn.Module):
 
     def __init__(self, d_model, d_ff, d_k, d_v, n_heads,
-                 attn_type, seed):
+                 attn_type, seed, device):
         super(EncoderLayer, self).__init__()
 
         np.random.seed(seed)
@@ -21,7 +21,7 @@ class EncoderLayer(nn.Module):
         self.enc_self_attn = MultiHeadAttention(
             d_model=d_model, d_k=d_k,
             d_v=d_v, n_heads=n_heads,
-            attn_type=attn_type, seed=seed)
+            attn_type=attn_type, seed=seed, device=device)
 
         self.pos_ffn = PoswiseFeedForwardNet(
             d_model=d_model, d_ff=d_ff)
@@ -57,7 +57,7 @@ class Encoder(nn.Module):
             encoder_layer = EncoderLayer(
                 d_model=d_model, d_ff=d_ff,
                 d_k=d_k, d_v=d_v, n_heads=n_heads,
-                attn_type=attn_type, seed=seed)
+                attn_type=attn_type, seed=seed, device=device)
             self.layers.append(encoder_layer)
         self.layers = nn.ModuleList(self.layers)
 
