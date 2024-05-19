@@ -16,9 +16,9 @@ class TrainForecastBlurDenoise:
                  *,
                  exp_name='toy_data',
                  forecasting_model_name="LSTM",
-                 n_jobs=1,
+                 n_jobs=4,
                  n_trials=5,
-                 num_epochs=10,
+                 num_epochs=35,
                  num_iteration,
                  forecasting_model,
                  train,
@@ -153,7 +153,7 @@ class TrainForecastBlurDenoise:
 
         best_trial_valid_loss = 1e10
 
-        for epoch in range(35):
+        for epoch in range(self.num_epochs):
             train_loss = 0
             self.forecast_denoising_model.train()
 

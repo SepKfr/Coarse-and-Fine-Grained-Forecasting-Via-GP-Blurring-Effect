@@ -156,7 +156,7 @@ def main():
                                                     add_noise_only_at_training=args.add_noise_only_at_training,
                                                     input_size=input_size,
                                                     output_size=output_size,
-                                                    pred_len=96,
+                                                    pred_len=args.pred_len,
                                                     hyperparameters=hyperparameters,
                                                     seed=1234,
                                                     device=device)
